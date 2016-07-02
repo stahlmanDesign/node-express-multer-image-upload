@@ -14,4 +14,4 @@ Type these commands in the terminal inside the folder where you cloned the repos
 - `open http://localhost:3000/`
 
 ---
-<img src='preivew.png'/>
+<img src='preview.png'/>
