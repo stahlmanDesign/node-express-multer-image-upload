@@ -8,5 +8,10 @@ This example allows for uploading a file by:
 - validation of non-conform files
 
 ## Start
-- `nodemon`
+Type these commands in the terminal inside the folder where you cloned the repository
+- `npm install` to install node modules
+- `nodemon` if not installed `npm install nodemon -g`
 - `open http://localhost:3000/`
+
+---
+<img src='preivew.png'/>
