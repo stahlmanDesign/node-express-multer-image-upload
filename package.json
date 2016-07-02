@@ -9,6 +9,7 @@
   "author": "Justin Stahlman <jstahlman@mac.com> (http://www.stahlmandesign.com)",
   "license": "ISC",
   "dependencies": {
+    "ejs": "^2.4.2",
     "multer": "^1.1.0"
   }
 }
