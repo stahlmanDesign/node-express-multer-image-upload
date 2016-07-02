@@ -1,0 +1,14 @@
+{
+  "name": "multer-test",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Justin Stahlman <jstahlman@mac.com> (http://www.stahlmandesign.com)",
+  "license": "ISC",
+  "dependencies": {
+    "multer": "^1.1.0"
+  }
+}
