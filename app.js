@@ -52,7 +52,9 @@ app.post('/uploads', function (req, res, next) {
 
             if (req.files.fileName) { // fileName comes from input element:   <input type="file" name="fileName">
                 var reqJSON = JSON.stringify(req.files.fileName, null, 2); // pretty print the JSON for <pre> tag
-                res.end("<h1>Uploaded from file</h2><img style='max-width:20%' src='" + req.files.fileName[0].path + "'/><pre>" + reqJSON + "</pre><a href='/'>Go back</a>")
+                res.writeHead(200,{'Content-Type':'text/html'});
+                res.write("<h1>Uploaded from file</h2><img style='max-width:20%' src='" + req.files.fileName[0].path + "'/><pre>" + reqJSON + "</pre><a href='/'>Go back</a>");
+                res.end();
                 //console.log("req.files.fileName")
                 //console.log(req.files.fileName)
             }
