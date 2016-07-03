@@ -1,7 +1,8 @@
 var express = require('express');
-var fs = require('fs');
+var fs = require('fs'); // file system, to save files
 var request = require('request');
 var url = require('url'); // to parse URL and separate filename from path
+var progress = require('progress-stream'); // to have a progress bar during upload
 
 var app = express();
 
@@ -34,12 +35,27 @@ var upload = multer({
     limits: { fileSize: 1048576, files: 1 } // limit file size to 1048576 bytes or 1 MB
     //,fileFilter: // TODO limit types of files. currently can upload a .txt or any kind of file into uploads folder
 }).fields([ // fields to accept multiple types of uploads
-    { name: "fileName", maxCount: 1 } // in <input name='file' />
+    { name: "fileName", maxCount: 1 } // in <input name='fileName' />
 ]);
+
+
 
 // for input type=file
 app.post('/uploads', function (req, res, next) {
-    upload(req, res, function (err) {
+
+  var prog = progress({time:100},function(progress){ // time:100 means will check progress every 100 ms, say to update progress bar
+    // NOTE may need to increase accepted file size to see any kind of progress, might be too fast
+    var len = this.headers['content-length'];
+    var transf = progress.transferred;
+    var result = Math.round(transf/len * 100)+'%';
+    console.log(result); // writes progress to console. does not work with images from internet, only file uploads
+    //if (result != '100%') res.send(result)
+  });
+
+  req.pipe(prog);
+  prog.headers = req.headers;
+
+    upload(prog, res, function (err) { // changed req to prog in order to track % upload progress
         if (err) {
             res.status(err.status || 500).json({ "error": { "status_code": err.status || 500, "message": err.code } });
             return;
@@ -50,15 +66,17 @@ app.post('/uploads', function (req, res, next) {
           // console.log(req.files); // if using upload.fields([]); // array of input field names
           // console.log(req.body); // if using a text field instead of file input, ex. to grab url from another site by path name
 
-            if (req.files.fileName) { // fileName comes from input element:   <input type="file" name="fileName">
-                var reqJSON = JSON.stringify(req.files.fileName, null, 2); // pretty print the JSON for <pre> tag
+            if (prog.files.fileName) { // fileName comes from input element:   <input type="file" name="fileName">
+
                 res.writeHead(200,{'Content-Type':'text/html'});
-                res.write("<h1>Uploaded from file</h2><img style='max-width:20%' src='" + req.files.fileName[0].path + "'/><pre>" + reqJSON + "</pre><a href='/'>Go back</a>");
+                var reqJSON = JSON.stringify(prog.files.fileName, null, 2); // pretty print the JSON for <pre> tag
+
+                res.write("<h1>Uploaded from file</h2><img style='max-width:20%' src='" + prog.files.fileName[0].path + "'/><pre>" + reqJSON + "</pre><a href='/'>Go back</a>");
                 res.end();
                 //console.log("req.files.fileName")
                 //console.log(req.files.fileName)
             }
-            else if (req.body.imageUrl) {
+            else if (prog.body.imageUrl) {
 
               // the text field was used, so process the input type=text with regular node/express
                 var download = function (uri, filename, callback) {
@@ -70,7 +88,7 @@ app.post('/uploads', function (req, res, next) {
                 };
 
                 // this is only available when submitting a text url, not by choosing file to upload
-                var urlParsed = url.parse(req.body.imageUrl);
+                var urlParsed = url.parse(prog.body.imageUrl);
                 if (urlParsed.pathname){
                   var onlyTheFilename = urlParsed.pathname ? urlParsed.pathname.substring(urlParsed.pathname.lastIndexOf('/') + 1).replace(/((\?|#).*)?$/, '') : '';
                   //console.log(urlParsed)
