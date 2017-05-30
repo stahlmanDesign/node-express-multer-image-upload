@@ -32,7 +32,7 @@ app.use(express.static('./')); // serve all files in root folder, such as index.
 // initialize Multer with storage definition and other options like limit to file size that can be uploaded
 var upload = multer({
     storage: storage,
-    limits: { fileSize: 1048576, files: 1 } // limit file size to 1048576 bytes or 1 MB
+    // limits: { fileSize: 1048576, files: 1 } // limit file size to 1048576 bytes or 1 MB
     //,fileFilter: // TODO limit types of files. currently can upload a .txt or any kind of file into uploads folder
 }).fields([ // fields to accept multiple types of uploads
     { name: "fileName", maxCount: 1 } // in <input name='fileName' />
@@ -106,6 +106,6 @@ app.post('/uploads', function (req, res, next) {
     });
 });
 
-app.listen(3000, function () {
-    console.log("Working on port 3000");
+app.listen(3003, function () {
+    console.log("Working on port 3003");
 });
